@@ -2,6 +2,7 @@ package com.suminex.erp.controller;
 
 import com.suminex.erp.dto.AuthenticatedUserResponse;
 import com.suminex.erp.dto.CreateUserRequest;
+import com.suminex.erp.dto.UpdateUserStatusRequest;
 import com.suminex.erp.dto.UserResponse;
 import com.suminex.erp.security.CustomUserDetails;
 import com.suminex.erp.service.UserService;
@@ -27,6 +28,16 @@ public class UserController {
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
         UserResponse response = userService.createUser(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
+    public ResponseEntity<UserResponse> updateUserStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateUserStatusRequest request
+    ) {
+        UserResponse response = userService.updateUserStatus(id, request.getEnabled());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/me")
