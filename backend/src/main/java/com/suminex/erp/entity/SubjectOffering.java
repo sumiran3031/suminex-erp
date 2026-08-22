@@ -37,8 +37,9 @@ public class SubjectOffering {
     @JoinColumn(name = "division_id", nullable = false)
     private Division division;
 
-    @Column(name = "batch_id")
-    private Long batchId; // nullable — set only for practical/batch-specific offerings; Batch entity comes in Phase 5
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "batch_id")
+    private Batch batch; // CHANGED: now a real relationship, was Long batchId
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -108,12 +109,12 @@ public class SubjectOffering {
         this.division = division;
     }
 
-    public Long getBatchId() {
-        return batchId;
+    public Batch getBatch() {
+        return batch;
     }
 
-    public void setBatchId(Long batchId) {
-        this.batchId = batchId;
+    public void setBatch(Batch batch) {
+        this.batch = batch;
     }
 
     public LocalDateTime getCreatedAt() {

@@ -21,19 +21,22 @@ public class SubjectOfferingService {
     private final AcademicYearRepository academicYearRepository;
     private final SemesterRepository semesterRepository;
     private final DivisionRepository divisionRepository;
+    private final BatchRepository batchRepository;
 
     public SubjectOfferingService(SubjectOfferingRepository subjectOfferingRepository,
                                   SubjectRepository subjectRepository,
                                   TeacherRepository teacherRepository,
                                   AcademicYearRepository academicYearRepository,
                                   SemesterRepository semesterRepository,
-                                  DivisionRepository divisionRepository) {
+                                  DivisionRepository divisionRepository,
+                                  BatchRepository batchRepository) {
         this.subjectOfferingRepository = subjectOfferingRepository;
         this.subjectRepository = subjectRepository;
         this.teacherRepository = teacherRepository;
         this.academicYearRepository = academicYearRepository;
         this.semesterRepository = semesterRepository;
         this.divisionRepository = divisionRepository;
+        this.batchRepository = batchRepository;
     }
 
     @Transactional
@@ -65,7 +68,12 @@ public class SubjectOfferingService {
         offering.setAcademicYear(academicYear);
         offering.setSemester(semester);
         offering.setDivision(division);
-        offering.setBatchId(request.getBatchId());
+
+        if (request.getBatchId() != null) {
+            Batch batch = batchRepository.findById(request.getBatchId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Batch not found"));
+            offering.setBatch(batch);
+        }
 
         SubjectOffering saved = subjectOfferingRepository.save(offering);
         return toResponse(saved);
@@ -103,7 +111,7 @@ public class SubjectOfferingService {
                 offering.getSemester().getSemesterNumber(),
                 offering.getDivision().getId(),
                 offering.getDivision().getDivisionName(),
-                offering.getBatchId()
+                offering.getBatch() != null ? offering.getBatch().getId() : null
         );
     }
 }

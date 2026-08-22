@@ -28,8 +28,9 @@ public class StudentEnrollment {
     @JoinColumn(name = "division_id", nullable = false)
     private Division division;
 
-    @Column(name = "batch_id")
-    private Long batchId; // nullable, same temporary approach as SubjectOffering until Batch entity exists
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "batch_id")
+    private Batch batch; // CHANGED: now a real relationship, was Long batchId
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -89,12 +90,12 @@ public class StudentEnrollment {
         this.division = division;
     }
 
-    public Long getBatchId() {
-        return batchId;
+    public Batch getBatch() {
+        return batch;
     }
 
-    public void setBatchId(Long batchId) {
-        this.batchId = batchId;
+    public void setBatch(Batch batch) {
+        this.batch = batch;
     }
 
     public EnrollmentStatus getStatus() {

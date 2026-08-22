@@ -23,17 +23,20 @@ public class EnrollmentService {
     private final AcademicYearRepository academicYearRepository;
     private final SemesterRepository semesterRepository;
     private final DivisionRepository divisionRepository;
+    private final BatchRepository batchRepository;
 
     public EnrollmentService(StudentEnrollmentRepository enrollmentRepository,
                              StudentRepository studentRepository,
                              AcademicYearRepository academicYearRepository,
                              SemesterRepository semesterRepository,
-                             DivisionRepository divisionRepository) {
+                             DivisionRepository divisionRepository,
+                             BatchRepository batchRepository) {
         this.enrollmentRepository = enrollmentRepository;
         this.studentRepository = studentRepository;
         this.academicYearRepository = academicYearRepository;
         this.semesterRepository = semesterRepository;
         this.divisionRepository = divisionRepository;
+        this.batchRepository = batchRepository;
     }
 
     @Transactional
@@ -57,7 +60,13 @@ public class EnrollmentService {
         enrollment.setAcademicYear(academicYear);
         enrollment.setSemester(semester);
         enrollment.setDivision(division);
-        enrollment.setBatchId(request.getBatchId());
+
+        if (request.getBatchId() != null) {
+            Batch batch = batchRepository.findById(request.getBatchId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Batch not found"));
+            enrollment.setBatch(batch);
+        }
+
         enrollment.setStatus(EnrollmentStatus.ACTIVE);
 
         StudentEnrollment saved = enrollmentRepository.save(enrollment);
@@ -80,18 +89,22 @@ public class EnrollmentService {
         Division newDivision = divisionRepository.findById(request.getDivisionId())
                 .orElseThrow(() -> new ResourceNotFoundException("Division not found"));
 
-        // Close the old enrollment — never delete, never overwrite.
         current.setStatus(EnrollmentStatus.PROMOTED);
         current.setEndedAt(LocalDateTime.now());
         enrollmentRepository.save(current);
 
-        // Create the new enrollment as a fresh record.
         StudentEnrollment newEnrollment = new StudentEnrollment();
         newEnrollment.setStudent(current.getStudent());
         newEnrollment.setAcademicYear(newAcademicYear);
         newEnrollment.setSemester(newSemester);
         newEnrollment.setDivision(newDivision);
-        newEnrollment.setBatchId(request.getBatchId());
+
+        if (request.getBatchId() != null) {
+            Batch batch = batchRepository.findById(request.getBatchId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Batch not found"));
+            newEnrollment.setBatch(batch);
+        }
+
         newEnrollment.setStatus(EnrollmentStatus.ACTIVE);
 
         StudentEnrollment saved = enrollmentRepository.save(newEnrollment);
@@ -118,7 +131,7 @@ public class EnrollmentService {
                 enrollment.getAcademicYear().getYearLabel(),
                 enrollment.getSemester().getSemesterNumber(),
                 enrollment.getDivision().getDivisionName(),
-                enrollment.getBatchId(),
+                enrollment.getBatch() != null ? enrollment.getBatch().getId() : null,
                 enrollment.getStatus(),
                 enrollment.getEnrolledAt(),
                 enrollment.getEndedAt()
