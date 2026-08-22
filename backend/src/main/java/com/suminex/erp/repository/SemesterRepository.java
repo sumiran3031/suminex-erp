@@ -1,4 +1,11 @@
 package com.suminex.erp.repository;
 
-public class SemesterRepository {
+import com.suminex.erp.entity.Semester;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface SemesterRepository extends JpaRepository<Semester, Long> {
+
+    List<Semester> findByAcademicYearId(Long academicYearId);
 }
