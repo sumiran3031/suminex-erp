@@ -1,4 +1,6 @@
 package com.suminex.erp.entity;
 
-public class SessionStatus {
+public enum SessionStatus {
+    CONDUCTED,
+    CANCELLED
 }
