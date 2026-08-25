@@ -11,7 +11,7 @@ public class GradeBandRequest {
     private String grade;
 
     private double gradePoint;
-    private boolean isPass;
+    private boolean pass;
 
     public int getMinMarks() {
         return minMarks;
@@ -46,10 +46,10 @@ public class GradeBandRequest {
     }
 
     public boolean isPass() {
-        return isPass;
+        return pass;
     }
 
     public void setPass(boolean pass) {
-        isPass = pass;
+        this.pass = pass;
     }
 }
