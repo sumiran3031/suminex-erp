@@ -2,6 +2,7 @@ package com.suminex.erp.controller;
 
 import com.suminex.erp.dto.CreateMarksEntryRequest;
 import com.suminex.erp.dto.MarksEntryResponse;
+import com.suminex.erp.dto.UpdateMarksStatusRequest;
 import com.suminex.erp.service.MarksEntryService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,16 @@ public class MarksEntryController {
     public ResponseEntity<MarksEntryResponse> createMarksEntry(@Valid @RequestBody CreateMarksEntryRequest request) {
         MarksEntryResponse response = marksEntryService.createMarksEntry(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'HOD', 'TEACHER')")
+    public ResponseEntity<MarksEntryResponse> updateStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateMarksStatusRequest request
+    ) {
+        MarksEntryResponse response = marksEntryService.updateStatus(id, request.getStatus());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/by-offering/{subjectOfferingId}")
