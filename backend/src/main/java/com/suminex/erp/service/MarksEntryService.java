@@ -24,23 +24,25 @@ public class MarksEntryService {
     private final SubjectOfferingRepository subjectOfferingRepository;
     private final StudentRepository studentRepository;
     private final GradingSchemeService gradingSchemeService;
+    private final NotificationService notificationService;
 
-    // Defines which status transitions are legal — enforced explicitly, not left implicit.
     private static final Map<MarksEntryStatus, Set<MarksEntryStatus>> ALLOWED_TRANSITIONS = Map.of(
             MarksEntryStatus.DRAFT, Set.of(MarksEntryStatus.SUBMITTED),
             MarksEntryStatus.SUBMITTED, Set.of(MarksEntryStatus.REVIEWED, MarksEntryStatus.DRAFT),
             MarksEntryStatus.REVIEWED, Set.of(MarksEntryStatus.PUBLISHED, MarksEntryStatus.SUBMITTED),
-            MarksEntryStatus.PUBLISHED, Set.of() // terminal — no transitions out without a correction flow (future work)
+            MarksEntryStatus.PUBLISHED, Set.of()
     );
 
     public MarksEntryService(MarksEntryRepository marksEntryRepository,
                              SubjectOfferingRepository subjectOfferingRepository,
                              StudentRepository studentRepository,
-                             GradingSchemeService gradingSchemeService) {
+                             GradingSchemeService gradingSchemeService,
+                             NotificationService notificationService) {
         this.marksEntryRepository = marksEntryRepository;
         this.subjectOfferingRepository = subjectOfferingRepository;
         this.studentRepository = studentRepository;
         this.gradingSchemeService = gradingSchemeService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -90,6 +92,16 @@ public class MarksEntryService {
 
         entry.setStatus(newStatus);
         MarksEntry saved = marksEntryRepository.save(entry);
+
+        if (newStatus == MarksEntryStatus.PUBLISHED) {
+            String message = "Your result for " + saved.getSubjectOffering().getSubject().getName()
+                    + " has been published. Grade: " + saved.getGrade();
+            notificationService.createNotification(
+                    saved.getStudent().getUser(),
+                    NotificationType.RESULT_PUBLISHED,
+                    message
+            );
+        }
 
         GradeBand band = gradingSchemeService.resolveGrade(saved.getTotal());
         return toResponse(saved, band.isPass());

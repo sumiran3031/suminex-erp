@@ -2,15 +2,13 @@ package com.suminex.erp.service;
 
 import com.suminex.erp.dto.AssignmentResponse;
 import com.suminex.erp.dto.AssignmentSubmissionResponse;
-import com.suminex.erp.entity.Assignment;
-import com.suminex.erp.entity.AssignmentSubmission;
-import com.suminex.erp.entity.Student;
-import com.suminex.erp.entity.SubjectOffering;
+import com.suminex.erp.entity.*;
 import com.suminex.erp.exception.BadRequestException;
 import com.suminex.erp.exception.ConflictException;
 import com.suminex.erp.exception.ResourceNotFoundException;
 import com.suminex.erp.repository.AssignmentRepository;
 import com.suminex.erp.repository.AssignmentSubmissionRepository;
+import com.suminex.erp.repository.StudentEnrollmentRepository;
 import com.suminex.erp.repository.StudentRepository;
 import com.suminex.erp.repository.SubjectOfferingRepository;
 import org.springframework.stereotype.Service;
@@ -28,18 +26,24 @@ public class AssignmentService {
     private final AssignmentSubmissionRepository submissionRepository;
     private final SubjectOfferingRepository subjectOfferingRepository;
     private final StudentRepository studentRepository;
+    private final StudentEnrollmentRepository enrollmentRepository;
     private final FileStorageService fileStorageService;
+    private final NotificationService notificationService;
 
     public AssignmentService(AssignmentRepository assignmentRepository,
                              AssignmentSubmissionRepository submissionRepository,
                              SubjectOfferingRepository subjectOfferingRepository,
                              StudentRepository studentRepository,
-                             FileStorageService fileStorageService) {
+                             StudentEnrollmentRepository enrollmentRepository,
+                             FileStorageService fileStorageService,
+                             NotificationService notificationService) {
         this.assignmentRepository = assignmentRepository;
         this.submissionRepository = submissionRepository;
         this.subjectOfferingRepository = subjectOfferingRepository;
         this.studentRepository = studentRepository;
+        this.enrollmentRepository = enrollmentRepository;
         this.fileStorageService = fileStorageService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -62,7 +66,25 @@ public class AssignmentService {
             saved = assignmentRepository.save(saved);
         }
 
+        notifyDivisionStudents(offering, saved);
+
         return toResponse(saved);
+    }
+
+    private void notifyDivisionStudents(SubjectOffering offering, Assignment assignment) {
+        List<StudentEnrollment> activeEnrollments = enrollmentRepository
+                .findByDivisionIdAndStatus(offering.getDivision().getId(), EnrollmentStatus.ACTIVE);
+
+        String message = "New assignment posted: \"" + assignment.getTitle() + "\" for "
+                + offering.getSubject().getName() + ". Due: " + assignment.getDueDate();
+
+        for (StudentEnrollment enrollment : activeEnrollments) {
+            notificationService.createNotification(
+                    enrollment.getStudent().getUser(),
+                    NotificationType.NEW_ASSIGNMENT,
+                    message
+            );
+        }
     }
 
     @Transactional
