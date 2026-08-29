@@ -2,6 +2,7 @@ package com.suminex.erp.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class CreateTeacherRequest {
@@ -26,6 +27,9 @@ public class CreateTeacherRequest {
     private String employeeCode;
 
     private String designation;
+
+    @NotNull(message = "Department id is required")
+    private Long departmentId;
 
     public String getEmail() {
         return email;
@@ -81,5 +85,13 @@ public class CreateTeacherRequest {
 
     public void setDesignation(String designation) {
         this.designation = designation;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
 }

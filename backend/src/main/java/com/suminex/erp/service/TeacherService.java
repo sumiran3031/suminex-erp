@@ -2,10 +2,13 @@ package com.suminex.erp.service;
 
 import com.suminex.erp.dto.CreateTeacherRequest;
 import com.suminex.erp.dto.TeacherResponse;
+import com.suminex.erp.entity.Department;
 import com.suminex.erp.entity.Role;
 import com.suminex.erp.entity.Teacher;
 import com.suminex.erp.entity.User;
 import com.suminex.erp.exception.ConflictException;
+import com.suminex.erp.exception.ResourceNotFoundException;
+import com.suminex.erp.repository.DepartmentRepository;
 import com.suminex.erp.repository.TeacherRepository;
 import com.suminex.erp.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,12 +20,14 @@ public class TeacherService {
 
     private final TeacherRepository teacherRepository;
     private final UserRepository userRepository;
+    private final DepartmentRepository departmentRepository;
     private final PasswordEncoder passwordEncoder;
 
     public TeacherService(TeacherRepository teacherRepository, UserRepository userRepository,
-                          PasswordEncoder passwordEncoder) {
+                          DepartmentRepository departmentRepository, PasswordEncoder passwordEncoder) {
         this.teacherRepository = teacherRepository;
         this.userRepository = userRepository;
+        this.departmentRepository = departmentRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -36,6 +41,9 @@ public class TeacherService {
             throw new ConflictException("A teacher with this employee code already exists");
         }
 
+        Department department = departmentRepository.findById(request.getDepartmentId())
+                .orElseThrow(() -> new ResourceNotFoundException("Department not found"));
+
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
@@ -46,6 +54,7 @@ public class TeacherService {
 
         Teacher teacher = new Teacher();
         teacher.setUser(savedUser);
+        teacher.setDepartment(department);
         teacher.setFirstName(request.getFirstName());
         teacher.setLastName(request.getLastName());
         teacher.setEmployeeCode(request.getEmployeeCode());
@@ -63,7 +72,9 @@ public class TeacherService {
                 teacher.getFirstName(),
                 teacher.getLastName(),
                 teacher.getEmployeeCode(),
-                teacher.getDesignation()
+                teacher.getDesignation(),
+                teacher.getDepartment() != null ? teacher.getDepartment().getId() : null,
+                teacher.getDepartment() != null ? teacher.getDepartment().getName() : null
         );
     }
 }

@@ -16,6 +16,10 @@ public class Teacher {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private Department department;
+
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
@@ -62,6 +66,14 @@ public class Teacher {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
     public String getFirstName() {

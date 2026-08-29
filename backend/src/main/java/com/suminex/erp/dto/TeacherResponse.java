@@ -9,9 +9,11 @@ public class TeacherResponse {
     private String lastName;
     private String employeeCode;
     private String designation;
+    private Long departmentId;
+    private String departmentName;
 
     public TeacherResponse(Long id, Long userId, String email, String firstName, String lastName,
-                           String employeeCode, String designation) {
+                           String employeeCode, String designation, Long departmentId, String departmentName) {
         this.id = id;
         this.userId = userId;
         this.email = email;
@@ -19,6 +21,8 @@ public class TeacherResponse {
         this.lastName = lastName;
         this.employeeCode = employeeCode;
         this.designation = designation;
+        this.departmentId = departmentId;
+        this.departmentName = departmentName;
     }
 
     public Long getId() {
@@ -47,5 +51,13 @@ public class TeacherResponse {
 
     public String getDesignation() {
         return designation;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public String getDepartmentName() {
+        return departmentName;
     }
 }
