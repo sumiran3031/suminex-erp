@@ -25,6 +25,7 @@ public class MarksEntryService {
     private final StudentRepository studentRepository;
     private final GradingSchemeService gradingSchemeService;
     private final NotificationService notificationService;
+    private final AuditLogService auditLogService;
 
     private static final Map<MarksEntryStatus, Set<MarksEntryStatus>> ALLOWED_TRANSITIONS = Map.of(
             MarksEntryStatus.DRAFT, Set.of(MarksEntryStatus.SUBMITTED),
@@ -37,12 +38,14 @@ public class MarksEntryService {
                              SubjectOfferingRepository subjectOfferingRepository,
                              StudentRepository studentRepository,
                              GradingSchemeService gradingSchemeService,
-                             NotificationService notificationService) {
+                             NotificationService notificationService,
+                             AuditLogService auditLogService) {
         this.marksEntryRepository = marksEntryRepository;
         this.subjectOfferingRepository = subjectOfferingRepository;
         this.studentRepository = studentRepository;
         this.gradingSchemeService = gradingSchemeService;
         this.notificationService = notificationService;
+        this.auditLogService = auditLogService;
     }
 
     @Transactional
@@ -73,6 +76,15 @@ public class MarksEntryService {
         entry.setStatus(MarksEntryStatus.DRAFT);
 
         MarksEntry saved = marksEntryRepository.save(entry);
+
+        auditLogService.log(
+                "CREATE_MARKS_ENTRY",
+                "MarksEntry",
+                saved.getId(),
+                null,
+                "total=" + total + ", grade=" + resolvedBand.getGrade()
+        );
+
         return toResponse(saved, resolvedBand.isPass());
     }
 
@@ -92,6 +104,14 @@ public class MarksEntryService {
 
         entry.setStatus(newStatus);
         MarksEntry saved = marksEntryRepository.save(entry);
+
+        auditLogService.log(
+                "UPDATE_MARKS_STATUS",
+                "MarksEntry",
+                saved.getId(),
+                currentStatus.toString(),
+                newStatus.toString()
+        );
 
         if (newStatus == MarksEntryStatus.PUBLISHED) {
             String message = "Your result for " + saved.getSubjectOffering().getSubject().getName()

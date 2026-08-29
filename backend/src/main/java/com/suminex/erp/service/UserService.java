@@ -15,10 +15,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditLogService auditLogService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                       AuditLogService auditLogService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.auditLogService = auditLogService;
     }
 
     @Transactional
@@ -48,8 +51,17 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
+        boolean oldValue = user.isEnabled();
         user.setEnabled(enabled);
         User saved = userRepository.save(user);
+
+        auditLogService.log(
+                "UPDATE_USER_STATUS",
+                "User",
+                saved.getId(),
+                String.valueOf(oldValue),
+                String.valueOf(enabled)
+        );
 
         return toResponse(saved);
     }
