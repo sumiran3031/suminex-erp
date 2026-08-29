@@ -40,13 +40,16 @@ public class AssignmentController {
     }
 
     @PostMapping(value = "/{id}/submit", consumes = "multipart/form-data")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'STUDENT')")
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<AssignmentSubmissionResponse> submitAssignment(
             @PathVariable Long id,
-            @RequestParam Long studentId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam MultipartFile file
     ) {
-       AssignmentSubmissionResponse response = assignmentService.submitAssignment(id, studentId, file);
+        // studentId is never taken from the request — always derived from the
+        // authenticated user's own token, so a student can only submit as themselves.
+        AssignmentSubmissionResponse response =
+                assignmentService.submitAssignment(id, userDetails.getUserId(), file);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -59,13 +62,5 @@ public class AssignmentController {
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'TEACHER')")
     public ResponseEntity<List<AssignmentSubmissionResponse>> getSubmissions(@PathVariable Long id) {
         return ResponseEntity.ok(assignmentService.getSubmissions(id));
-    }
-
-    // Placeholder resolver — Day 27 doesn't yet have a direct User->Student lookup by userId.
-    // We'll wire this properly; for now this throws clearly rather than silently guessing.
-    private Long resolveStudentIdFromUser(Long userId) {
-        throw new UnsupportedOperationException(
-                "Student self-submission requires a User->Student lookup, not yet implemented — " +
-                        "use the studentId-based test path for today's testing instead.");
     }
 }

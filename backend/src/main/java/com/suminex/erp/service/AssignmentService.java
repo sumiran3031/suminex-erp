@@ -87,15 +87,21 @@ public class AssignmentService {
         }
     }
 
+    /**
+     * Submits an assignment on behalf of the currently logged-in student.
+     * The student is resolved from userId (taken from the JWT) — never from a
+     * client-supplied studentId — so a student can only ever submit as themselves.
+     */
     @Transactional
-    public AssignmentSubmissionResponse submitAssignment(Long assignmentId, Long studentId, MultipartFile file) {
+    public AssignmentSubmissionResponse submitAssignment(Long assignmentId, Long userId, MultipartFile file) {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Assignment not found"));
 
-        Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+        Student student = studentRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "No student profile found for this account. Only students can submit assignments."));
 
-        if (submissionRepository.existsByAssignmentIdAndStudentId(assignmentId, studentId)) {
+        if (submissionRepository.existsByAssignmentIdAndStudentId(assignmentId, student.getId())) {
             throw new ConflictException("You have already submitted this assignment");
         }
 
@@ -103,7 +109,7 @@ public class AssignmentService {
             throw new BadRequestException("A file is required to submit");
         }
 
-        String path = fileStorageService.storeSubmissionFile(studentId, file);
+        String path = fileStorageService.storeSubmissionFile(student.getId(), file);
 
         AssignmentSubmission submission = new AssignmentSubmission();
         submission.setAssignment(assignment);
