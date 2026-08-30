@@ -12,6 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class StudentService {
 
@@ -30,6 +33,10 @@ public class StudentService {
     public StudentResponse createStudent(CreateStudentRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new ConflictException("A user with this email already exists");
+        }
+
+        if (request.getPhone() != null && userRepository.existsByPhone(request.getPhone())) {
+            throw new ConflictException("A user with this phone number already exists");
         }
 
         if (studentRepository.existsByRollNumber(request.getRollNumber())) {
@@ -58,6 +65,12 @@ public class StudentService {
         Student savedStudent = studentRepository.save(student);
 
         return toResponse(savedStudent);
+    }
+
+    public List<StudentResponse> getAllStudents() {
+        return studentRepository.findAll().stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     private StudentResponse toResponse(Student student) {
