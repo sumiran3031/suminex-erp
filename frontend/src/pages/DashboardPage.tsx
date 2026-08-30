@@ -1,14 +1,13 @@
 import { useAuth } from '../context/AuthContext';
 
 export default function DashboardPage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   return (
-    <div style={{ maxWidth: 600, margin: '40px auto', fontFamily: 'sans-serif' }}>
+    <div>
       <h1>Dashboard</h1>
-      <p>Welcome, {user?.email}</p>
-      <p>Role: {user?.role}</p>
-      <button onClick={logout}>Log out</button>
+      <p>Welcome back, {user?.email}.</p>
+      <p>You are logged in as: <strong>{user?.role}</strong></p>
     </div>
   );
 }
