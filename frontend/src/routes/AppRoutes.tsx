@@ -2,6 +2,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from '../pages/LoginPage';
 import DashboardPage from '../pages/DashboardPage';
 import StudentsPage from '../pages/StudentsPage';
+import TeachersPage from '../pages/TeachersPage';
+import DepartmentsPage from '../pages/DepartmentsPage';
 import ProtectedRoute from './ProtectedRoute';
 import AppLayout from '../layouts/AppLayout';
 
@@ -13,9 +15,7 @@ export default function AppRoutes() {
         path="/dashboard"
         element={
           <ProtectedRoute>
-            <AppLayout>
-              <DashboardPage />
-            </AppLayout>
+            <AppLayout><DashboardPage /></AppLayout>
           </ProtectedRoute>
         }
       />
@@ -23,9 +23,23 @@ export default function AppRoutes() {
         path="/students"
         element={
           <ProtectedRoute>
-            <AppLayout>
-              <StudentsPage />
-            </AppLayout>
+            <AppLayout><StudentsPage /></AppLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/teachers"
+        element={
+          <ProtectedRoute>
+            <AppLayout><TeachersPage /></AppLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/departments"
+        element={
+          <ProtectedRoute>
+            <AppLayout><DepartmentsPage /></AppLayout>
           </ProtectedRoute>
         }
       />
