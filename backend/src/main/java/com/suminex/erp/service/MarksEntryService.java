@@ -2,11 +2,13 @@ package com.suminex.erp.service;
 
 import com.suminex.erp.dto.CreateMarksEntryRequest;
 import com.suminex.erp.dto.MarksEntryResponse;
+import com.suminex.erp.dto.SessionRosterResponse;
 import com.suminex.erp.entity.*;
 import com.suminex.erp.exception.BadRequestException;
 import com.suminex.erp.exception.ConflictException;
 import com.suminex.erp.exception.ResourceNotFoundException;
 import com.suminex.erp.repository.MarksEntryRepository;
+import com.suminex.erp.repository.StudentEnrollmentRepository;
 import com.suminex.erp.repository.StudentRepository;
 import com.suminex.erp.repository.SubjectOfferingRepository;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class MarksEntryService {
     private final MarksEntryRepository marksEntryRepository;
     private final SubjectOfferingRepository subjectOfferingRepository;
     private final StudentRepository studentRepository;
+    private final StudentEnrollmentRepository enrollmentRepository;
     private final GradingSchemeService gradingSchemeService;
     private final NotificationService notificationService;
     private final AuditLogService auditLogService;
@@ -37,12 +40,14 @@ public class MarksEntryService {
     public MarksEntryService(MarksEntryRepository marksEntryRepository,
                              SubjectOfferingRepository subjectOfferingRepository,
                              StudentRepository studentRepository,
+                             StudentEnrollmentRepository enrollmentRepository,
                              GradingSchemeService gradingSchemeService,
                              NotificationService notificationService,
                              AuditLogService auditLogService) {
         this.marksEntryRepository = marksEntryRepository;
         this.subjectOfferingRepository = subjectOfferingRepository;
         this.studentRepository = studentRepository;
+        this.enrollmentRepository = enrollmentRepository;
         this.gradingSchemeService = gradingSchemeService;
         this.notificationService = notificationService;
         this.auditLogService = auditLogService;
@@ -142,6 +147,21 @@ public class MarksEntryService {
                     GradeBand band = gradingSchemeService.resolveGrade(entry.getTotal());
                     return toResponse(entry, band.isPass());
                 })
+                .collect(Collectors.toList());
+    }
+
+    public List<SessionRosterResponse> getEligibleStudents(Long subjectOfferingId) {
+        SubjectOffering offering = subjectOfferingRepository.findById(subjectOfferingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Subject offering not found"));
+
+        return enrollmentRepository.findByDivisionIdAndStatus(
+                        offering.getDivision().getId(), EnrollmentStatus.ACTIVE)
+                .stream()
+                .map(e -> new SessionRosterResponse(
+                        e.getStudent().getId(),
+                        e.getStudent().getFirstName() + " " + e.getStudent().getLastName(),
+                        e.getStudent().getRollNumber()
+                ))
                 .collect(Collectors.toList());
     }
 

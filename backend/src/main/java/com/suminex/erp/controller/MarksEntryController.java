@@ -2,6 +2,7 @@ package com.suminex.erp.controller;
 
 import com.suminex.erp.dto.CreateMarksEntryRequest;
 import com.suminex.erp.dto.MarksEntryResponse;
+import com.suminex.erp.dto.SessionRosterResponse;
 import com.suminex.erp.dto.UpdateMarksStatusRequest;
 import com.suminex.erp.service.MarksEntryService;
 import jakarta.validation.Valid;
@@ -40,6 +41,7 @@ public class MarksEntryController {
     }
 
     @GetMapping("/by-offering/{subjectOfferingId}")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'HOD', 'TEACHER')")
     public ResponseEntity<List<MarksEntryResponse>> getBySubjectOffering(@PathVariable Long subjectOfferingId) {
         return ResponseEntity.ok(marksEntryService.getBySubjectOffering(subjectOfferingId));
     }
@@ -47,5 +49,11 @@ public class MarksEntryController {
     @GetMapping("/by-student/{studentId}")
     public ResponseEntity<List<MarksEntryResponse>> getByStudent(@PathVariable Long studentId) {
         return ResponseEntity.ok(marksEntryService.getByStudent(studentId));
+    }
+
+    @GetMapping("/eligible-students/{subjectOfferingId}")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'HOD', 'TEACHER')")
+    public ResponseEntity<List<SessionRosterResponse>> getEligibleStudents(@PathVariable Long subjectOfferingId) {
+        return ResponseEntity.ok(marksEntryService.getEligibleStudents(subjectOfferingId));
     }
 }
