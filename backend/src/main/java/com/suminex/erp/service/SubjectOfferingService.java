@@ -90,7 +90,11 @@ public class SubjectOfferingService {
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
-
+    public List<SubjectOfferingResponse> getAll() {
+        return subjectOfferingRepository.findAll().stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
     public List<SubjectOfferingResponse> getBySemester(Long semesterId) {
         return subjectOfferingRepository.findBySemesterId(semesterId).stream()
                 .map(this::toResponse)

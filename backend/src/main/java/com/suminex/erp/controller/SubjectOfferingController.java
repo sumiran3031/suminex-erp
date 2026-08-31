@@ -34,7 +34,10 @@ public class SubjectOfferingController {
     public ResponseEntity<List<SubjectOfferingResponse>> getByTeacher(@PathVariable Long teacherId) {
         return ResponseEntity.ok(subjectOfferingService.getByTeacher(teacherId));
     }
-
+    @GetMapping
+    public ResponseEntity<List<SubjectOfferingResponse>> getAll() {
+        return ResponseEntity.ok(subjectOfferingService.getAll());
+    }
     @GetMapping("/by-division/{divisionId}")
     public ResponseEntity<List<SubjectOfferingResponse>> getByDivision(@PathVariable Long divisionId) {
         return ResponseEntity.ok(subjectOfferingService.getByDivision(divisionId));

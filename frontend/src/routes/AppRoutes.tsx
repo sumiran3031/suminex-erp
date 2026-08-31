@@ -6,7 +6,7 @@ import TeachersPage from '../pages/TeachersPage';
 import DepartmentsPage from '../pages/DepartmentsPage';
 import ProtectedRoute from './ProtectedRoute';
 import AppLayout from '../layouts/AppLayout';
-
+import TimetablePage from '../pages/TimetablePage';
 export default function AppRoutes() {
   return (
     <Routes>
@@ -27,6 +27,7 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      
       <Route
         path="/teachers"
         element={
@@ -42,6 +43,14 @@ export default function AppRoutes() {
             <AppLayout><DepartmentsPage /></AppLayout>
           </ProtectedRoute>
         }
+      />
+      <Route
+        path="/timetable"
+        element={
+        <ProtectedRoute>
+            <AppLayout><TimetablePage /></AppLayout>
+          </ProtectedRoute>
+         }
       />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
     </Routes>
