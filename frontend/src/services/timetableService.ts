@@ -27,3 +27,8 @@ export async function createTimetableEntry(data: CreateTimetableRequest): Promis
   const response = await apiClient.post<TimetableEntry>('/api/timetables', data);
   return response.data;
 }
+
+export async function getMyTimetable(): Promise<TimetableEntry[]> {
+  const response = await apiClient.get<TimetableEntry[]>('/api/timetables/my-timetable');
+  return response.data;
+}

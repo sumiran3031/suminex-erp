@@ -22,3 +22,8 @@ export async function updateMarksStatus(id: number, status: MarksEntryStatus): P
   const response = await apiClient.patch<MarksEntry>(`/api/marks-entries/${id}/status`, { status });
   return response.data;
 }
+
+export async function getMyResults(): Promise<MarksEntry[]> {
+  const response = await apiClient.get<MarksEntry[]>('/api/marks-entries/my-results');
+  return response.data;
+}

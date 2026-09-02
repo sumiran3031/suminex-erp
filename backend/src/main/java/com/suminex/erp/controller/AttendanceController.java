@@ -3,11 +3,13 @@ package com.suminex.erp.controller;
 import com.suminex.erp.dto.AttendanceResponse;
 import com.suminex.erp.dto.MarkAttendanceRequest;
 import com.suminex.erp.dto.SessionRosterResponse;
+import com.suminex.erp.security.CustomUserDetails;
 import com.suminex.erp.service.AttendanceService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,19 +26,45 @@ public class AttendanceController {
 
     @GetMapping("/roster/{teachingSessionId}")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'TEACHER')")
-    public ResponseEntity<List<SessionRosterResponse>> getRoster(@PathVariable Long teachingSessionId) {
-        return ResponseEntity.ok(attendanceService.getRosterForSession(teachingSessionId));
+    public ResponseEntity<List<SessionRosterResponse>> getRoster(
+            @PathVariable Long teachingSessionId) {
+
+        return ResponseEntity.ok(
+                attendanceService.getRosterForSession(teachingSessionId)
+        );
     }
 
     @PostMapping
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'TEACHER')")
-    public ResponseEntity<List<AttendanceResponse>> markAttendance(@Valid @RequestBody MarkAttendanceRequest request) {
-        List<AttendanceResponse> response = attendanceService.markAttendance(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public ResponseEntity<List<AttendanceResponse>> markAttendance(
+            @Valid @RequestBody MarkAttendanceRequest request) {
+
+        List<AttendanceResponse> response =
+                attendanceService.markAttendance(request);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @GetMapping("/my-attendance")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<List<AttendanceResponse>> getMyAttendance(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        return ResponseEntity.ok(
+                attendanceService.getMyAttendance(
+                        userDetails.getUserId()
+                )
+        );
     }
 
     @GetMapping("/session/{teachingSessionId}")
-    public ResponseEntity<List<AttendanceResponse>> getBySession(@PathVariable Long teachingSessionId) {
-        return ResponseEntity.ok(attendanceService.getBySession(teachingSessionId));
+    public ResponseEntity<List<AttendanceResponse>> getBySession(
+            @PathVariable Long teachingSessionId) {
+
+        return ResponseEntity.ok(
+                attendanceService.getBySession(teachingSessionId)
+        );
     }
 }
