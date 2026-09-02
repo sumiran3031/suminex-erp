@@ -31,7 +31,14 @@ public class TeachingSessionController {
     }
 
     @GetMapping("/by-teacher/{teacherId}")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'TEACHER')")
     public ResponseEntity<List<TeachingSessionResponse>> getByTeacher(@PathVariable Long teacherId) {
         return ResponseEntity.ok(teachingSessionService.getByTeacher(teacherId));
+    }
+
+    @GetMapping("/by-offering/{subjectOfferingId}")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'TEACHER')")
+    public ResponseEntity<List<TeachingSessionResponse>> getBySubjectOffering(@PathVariable Long subjectOfferingId) {
+        return ResponseEntity.ok(teachingSessionService.getBySubjectOffering(subjectOfferingId));
     }
 }

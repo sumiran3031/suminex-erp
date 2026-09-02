@@ -14,4 +14,6 @@ public interface TeachingSessionRepository extends JpaRepository<TeachingSession
     Optional<TeachingSession> findByTimetableIdAndSessionDate(Long timetableId, LocalDate sessionDate);
 
     List<TeachingSession> findByTimetableSubjectOfferingTeacherId(Long teacherId);
+
+    List<TeachingSession> findByTimetableSubjectOfferingId(Long subjectOfferingId);
 }

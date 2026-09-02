@@ -32,3 +32,8 @@ export async function getMyTimetable(): Promise<TimetableEntry[]> {
   const response = await apiClient.get<TimetableEntry[]>('/api/timetables/my-timetable');
   return response.data;
 }
+
+export async function getTimetableByOffering(subjectOfferingId: number): Promise<TimetableEntry[]> {
+  const response = await apiClient.get<TimetableEntry[]>(`/api/timetables/by-offering/${subjectOfferingId}`);
+  return response.data;
+}

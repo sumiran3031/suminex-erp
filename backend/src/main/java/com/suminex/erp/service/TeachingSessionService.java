@@ -52,6 +52,12 @@ public class TeachingSessionService {
                 .collect(Collectors.toList());
     }
 
+    public List<TeachingSessionResponse> getBySubjectOffering(Long subjectOfferingId) {
+        return teachingSessionRepository.findByTimetableSubjectOfferingId(subjectOfferingId).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
     private TeachingSessionResponse toResponse(TeachingSession session) {
         var offering = session.getTimetable().getSubjectOffering();
         return new TeachingSessionResponse(

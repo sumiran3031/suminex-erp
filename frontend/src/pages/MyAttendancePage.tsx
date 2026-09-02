@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getMyAttendance } from '../services/attendanceService';
-import type { MyAttendanceEntry } from '../services/attendanceService';
+import type { MyAttendanceEntry } from '../types/attendance';
 
 export default function MyAttendancePage() {
   const [entries, setEntries] = useState<MyAttendanceEntry[]>([]);

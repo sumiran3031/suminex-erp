@@ -25,44 +25,32 @@ public class TimetableController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'HOD')")
-    public ResponseEntity<TimetableResponse> createTimetableEntry(
-            @Valid @RequestBody TimetableRequest request) {
-
-        TimetableResponse response =
-                timetableService.createTimetableEntry(request);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+    public ResponseEntity<TimetableResponse> createTimetableEntry(@Valid @RequestBody TimetableRequest request) {
+        TimetableResponse response = timetableService.createTimetableEntry(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/by-teacher/{teacherId}")
-    public ResponseEntity<List<TimetableResponse>> getByTeacher(
-            @PathVariable Long teacherId) {
+    public ResponseEntity<List<TimetableResponse>> getByTeacher(@PathVariable Long teacherId) {
+        return ResponseEntity.ok(timetableService.getByTeacher(teacherId));
+    }
 
-        return ResponseEntity.ok(
-                timetableService.getByTeacher(teacherId)
-        );
+    @GetMapping("/by-division/{divisionId}")
+    public ResponseEntity<List<TimetableResponse>> getByDivision(@PathVariable Long divisionId) {
+        return ResponseEntity.ok(timetableService.getByDivision(divisionId));
+    }
+
+    @GetMapping("/by-offering/{subjectOfferingId}")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'TEACHER')")
+    public ResponseEntity<List<TimetableResponse>> getBySubjectOffering(@PathVariable Long subjectOfferingId) {
+        return ResponseEntity.ok(timetableService.getBySubjectOffering(subjectOfferingId));
     }
 
     @GetMapping("/my-timetable")
     @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<List<TimetableResponse>> getMyTimetable(
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        return ResponseEntity.ok(
-                timetableService.getMyTimetable(
-                        userDetails.getUserId()
-                )
-        );
-    }
-
-    @GetMapping("/by-division/{divisionId}")
-    public ResponseEntity<List<TimetableResponse>> getByDivision(
-            @PathVariable Long divisionId) {
-
-        return ResponseEntity.ok(
-                timetableService.getByDivision(divisionId)
-        );
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return ResponseEntity.ok(timetableService.getMyTimetable(userDetails.getUserId()));
     }
 }
