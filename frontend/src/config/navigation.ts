@@ -39,13 +39,13 @@ const navConfig: Record<Role, NavItem[]> = {
     { label: 'Dashboard', path: '/dashboard' },
   ],
   STUDENT: [
-    { label: 'Dashboard', path: '/dashboard' },
-    { label: 'My Timetable', path: '/my-timetable' },
-    { label: 'My Attendance', path: '/my-attendance' },
-    { label: 'My Results', path: '/my-results' },
-    { label: 'Assignments', path: '/assignments' },
-    { label: 'Notifications', path: '/notifications' },
-  ],
+  { label: 'Dashboard', path: '/dashboard' },
+  { label: 'My Timetable', path: '/my-timetable' },
+  { label: 'My Attendance', path: '/my-attendance' },
+  { label: 'My Results', path: '/my-results' },
+  { label: 'Assignments', path: '/my-assignments' },
+  { label: 'Notifications', path: '/notifications' },
+],
 };
 
 export function getNavItemsForRole(role: Role): NavItem[] {
