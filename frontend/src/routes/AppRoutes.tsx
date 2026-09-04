@@ -12,6 +12,9 @@ import MyResultsPage from '../pages/MyResultsPage';
 import NotificationsPage from '../pages/NotificationsPage';
 import AttendanceMarkingPage from '../pages/AttendanceMarkingPage';
 import TeacherAssignmentsPage from '../pages/TeacherAssignmentsPage';
+import AnalyticsPage from '../pages/AnalyticsPage';
+import AuditLogsPage from '../pages/AuditLogsPage';
+import CorrectionRequestsPage from '../pages/CorrectionRequestsPage';
 import ProtectedRoute from './ProtectedRoute';
 import AppLayout from '../layouts/AppLayout';
 
@@ -31,6 +34,9 @@ export default function AppRoutes() {
       <Route path="/notifications" element={<ProtectedRoute><AppLayout><NotificationsPage /></AppLayout></ProtectedRoute>} />
       <Route path="/attendance" element={<ProtectedRoute><AppLayout><AttendanceMarkingPage /></AppLayout></ProtectedRoute>} />
       <Route path="/assignments" element={<ProtectedRoute><AppLayout><TeacherAssignmentsPage /></AppLayout></ProtectedRoute>} />
+      <Route path="/analytics" element={<ProtectedRoute><AppLayout><AnalyticsPage /></AppLayout></ProtectedRoute>} />
+      <Route path="/audit-logs" element={<ProtectedRoute><AppLayout><AuditLogsPage /></AppLayout></ProtectedRoute>} />
+      <Route path="/correction-requests" element={<ProtectedRoute><AppLayout><CorrectionRequestsPage /></AppLayout></ProtectedRoute>} />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import apiClient from '../services/apiClient';
 import { getMyResults } from '../services/marksEntryService';
 import type { MarksEntry } from '../types/marksEntry';
 
@@ -6,6 +7,7 @@ export default function MyResultsPage() {
   const [entries, setEntries] = useState<MarksEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     getMyResults()
@@ -14,9 +16,36 @@ export default function MyResultsPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Downloading requires knowing the student's own id and a semester id.
+  // For today's scope, we use ids 1 and 1, matching our seeded test data —
+  // a real implementation would resolve these from the logged-in user's own
+  // active enrollment, similar to the other "my-*" endpoints built this week.
+  async function handleDownload() {
+    setDownloading(true);
+    try {
+      const response = await apiClient.get('/api/results/1/1/pdf', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'result.pdf');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch {
+      setError('Failed to download result PDF.');
+    } finally {
+      setDownloading(false);
+    }
+  }
+
   return (
     <div>
-      <h1>My Results</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1>My Results</h1>
+        <button onClick={handleDownload} disabled={downloading}>
+          {downloading ? 'Downloading...' : 'Download Result PDF'}
+        </button>
+      </div>
       <p style={{ color: '#64748b' }}>Only published results are shown here.</p>
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}

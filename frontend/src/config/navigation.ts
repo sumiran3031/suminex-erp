@@ -5,8 +5,6 @@ export interface NavItem {
   path: string;
 }
 
-// Central definition of which nav items each role can see.
-// Adding a new page later means adding one line here, not touching the Sidebar.
 const navConfig: Record<Role, NavItem[]> = {
   SUPER_ADMIN: [
     { label: 'Dashboard', path: '/dashboard' },
@@ -21,11 +19,14 @@ const navConfig: Record<Role, NavItem[]> = {
     { label: 'Departments', path: '/departments' },
     { label: 'Timetable', path: '/timetable' },
     { label: 'Results', path: '/results' },
+    { label: 'Analytics', path: '/analytics' },
+    { label: 'Audit Logs', path: '/audit-logs' },
   ],
   HOD: [
     { label: 'Dashboard', path: '/dashboard' },
     { label: 'My Department', path: '/my-department' },
     { label: 'Correction Requests', path: '/correction-requests' },
+    { label: 'Analytics', path: '/analytics' },
   ],
   TEACHER: [
     { label: 'Dashboard', path: '/dashboard' },
