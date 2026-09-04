@@ -87,11 +87,6 @@ public class AssignmentService {
         }
     }
 
-    /**
-     * Submits an assignment on behalf of the currently logged-in student.
-     * The student is resolved from userId (taken from the JWT) — never from a
-     * client-supplied studentId — so a student can only ever submit as themselves.
-     */
     @Transactional
     public AssignmentSubmissionResponse submitAssignment(Long assignmentId, Long userId, MultipartFile file) {
         Assignment assignment = assignmentRepository.findById(assignmentId)
@@ -125,6 +120,36 @@ public class AssignmentService {
         return assignmentRepository.findBySubjectOfferingId(subjectOfferingId).stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns assignments for the subject offerings tied to the student's own
+     * active division enrollment — resolved from their token, never a client id.
+     */
+    public List<AssignmentResponse> getMyAssignments(Long userId) {
+        Student student = studentRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("No student profile found for this account"));
+
+        StudentEnrollment activeEnrollment = enrollmentRepository
+                .findByStudentIdAndStatus(student.getId(), EnrollmentStatus.ACTIVE)
+                .orElseThrow(() -> new ResourceNotFoundException("No active enrollment found"));
+
+        List<SubjectOffering> offerings = subjectOfferingRepository
+                .findByDivisionId(activeEnrollment.getDivision().getId());
+
+        return offerings.stream()
+                .flatMap(o -> assignmentRepository.findBySubjectOfferingId(o.getId()).stream())
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * For a given student's own view: has THIS student already submitted THIS assignment?
+     */
+    public boolean hasSubmitted(Long assignmentId, Long userId) {
+        Student student = studentRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("No student profile found for this account"));
+        return submissionRepository.existsByAssignmentIdAndStudentId(assignmentId, student.getId());
     }
 
     public List<AssignmentSubmissionResponse> getSubmissions(Long assignmentId) {

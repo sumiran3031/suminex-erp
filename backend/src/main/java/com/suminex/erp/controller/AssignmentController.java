@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/assignments")
@@ -46,8 +47,6 @@ public class AssignmentController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam MultipartFile file
     ) {
-        // studentId is never taken from the request — always derived from the
-        // authenticated user's own token, so a student can only submit as themselves.
         AssignmentSubmissionResponse response =
                 assignmentService.submitAssignment(id, userDetails.getUserId(), file);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -56,6 +55,24 @@ public class AssignmentController {
     @GetMapping("/by-offering/{subjectOfferingId}")
     public ResponseEntity<List<AssignmentResponse>> getBySubjectOffering(@PathVariable Long subjectOfferingId) {
         return ResponseEntity.ok(assignmentService.getBySubjectOffering(subjectOfferingId));
+    }
+
+    @GetMapping("/my-assignments")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<List<AssignmentResponse>> getMyAssignments(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return ResponseEntity.ok(assignmentService.getMyAssignments(userDetails.getUserId()));
+    }
+
+    @GetMapping("/{id}/has-submitted")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<Map<String, Boolean>> hasSubmitted(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        boolean submitted = assignmentService.hasSubmitted(id, userDetails.getUserId());
+        return ResponseEntity.ok(Map.of("submitted", submitted));
     }
 
     @GetMapping("/{id}/submissions")
