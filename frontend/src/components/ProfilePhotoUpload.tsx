@@ -6,20 +6,28 @@ export default function ProfilePhotoUpload() {
   const [photoPath, setPhotoPath] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
   async function handleUpload() {
-    if (!file) return;
     setError(null);
+    setSuccess(null);
+
+    if (!file) {
+      setError('Please select a file first.');
+      return;
+    }
+
     setUploading(true);
     try {
       const result = await uploadProfilePhoto(file);
       setPhotoPath(result.profilePhotoPath);
+      setSuccess('Profile photo uploaded successfully.');
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.data?.message) {
         setError(err.response.data.message);
       } else {
-        setError('Failed to upload photo.');
+        setError('Failed to upload photo. Please try again.');
       }
     } finally {
       setUploading(false);
@@ -36,11 +44,20 @@ export default function ProfilePhotoUpload() {
           style={{ width: 100, height: 100, objectFit: 'cover', borderRadius: '50%', marginBottom: 8, display: 'block' }}
         />
       )}
-      <input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+      <input
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        onChange={(e) => {
+          setFile(e.target.files?.[0] ?? null);
+          setError(null);
+          setSuccess(null);
+        }}
+      />
       <button onClick={handleUpload} disabled={uploading} style={{ marginLeft: 8 }}>
         {uploading ? 'Uploading...' : 'Upload'}
       </button>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p style={{ color: 'red', marginTop: 8 }}>{error}</p>}
+      {success && <p style={{ color: 'green', marginTop: 8 }}>{success}</p>}
     </div>
   );
 }
