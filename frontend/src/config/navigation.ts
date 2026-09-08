@@ -17,6 +17,8 @@ const navConfig: Record<Role, NavItem[]> = {
     { label: 'Students', path: '/students' },
     { label: 'Teachers', path: '/teachers' },
     { label: 'Departments', path: '/departments' },
+    { label: 'Subjects', path: '/subjects' },
+    { label: 'Batches', path: '/batches' },
     { label: 'Timetable', path: '/timetable' },
     { label: 'Results', path: '/results' },
     { label: 'Analytics', path: '/analytics' },
@@ -39,13 +41,13 @@ const navConfig: Record<Role, NavItem[]> = {
     { label: 'Dashboard', path: '/dashboard' },
   ],
   STUDENT: [
-  { label: 'Dashboard', path: '/dashboard' },
-  { label: 'My Timetable', path: '/my-timetable' },
-  { label: 'My Attendance', path: '/my-attendance' },
-  { label: 'My Results', path: '/my-results' },
-  { label: 'Assignments', path: '/my-assignments' },
-  { label: 'Notifications', path: '/notifications' },
-],
+    { label: 'Dashboard', path: '/dashboard' },
+    { label: 'My Timetable', path: '/my-timetable' },
+    { label: 'My Attendance', path: '/my-attendance' },
+    { label: 'My Results', path: '/my-results' },
+    { label: 'Assignments', path: '/my-assignments' },
+    { label: 'Notifications', path: '/notifications' },
+  ],
 };
 
 export function getNavItemsForRole(role: Role): NavItem[] {
