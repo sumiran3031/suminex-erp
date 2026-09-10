@@ -1,9 +1,12 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
+import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
 import DashboardPage from '../pages/DashboardPage';
 import StudentsPage from '../pages/StudentsPage';
 import TeachersPage from '../pages/TeachersPage';
 import DepartmentsPage from '../pages/DepartmentsPage';
+import SubjectsPage from '../pages/SubjectsPage';
+import BatchesPage from '../pages/BatchesPage';
 import TimetablePage from '../pages/TimetablePage';
 import MarksEntryPage from '../pages/MarksEntryPage';
 import MyTimetablePage from '../pages/MyTimetablePage';
@@ -16,14 +19,13 @@ import AnalyticsPage from '../pages/AnalyticsPage';
 import AuditLogsPage from '../pages/AuditLogsPage';
 import CorrectionRequestsPage from '../pages/CorrectionRequestsPage';
 import StudentAssignmentsPage from '../pages/StudentAssignmentsPage';
-import SubjectsPage from '../pages/SubjectsPage';
-import BatchesPage from '../pages/BatchesPage';
 import ProtectedRoute from './ProtectedRoute';
 import AppLayout from '../layouts/AppLayout';
 
 export default function AppRoutes() {
   return (
     <Routes>
+      <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/dashboard" element={<ProtectedRoute><AppLayout><DashboardPage /></AppLayout></ProtectedRoute>} />
       <Route path="/students" element={<ProtectedRoute><AppLayout><StudentsPage /></AppLayout></ProtectedRoute>} />
@@ -43,7 +45,6 @@ export default function AppRoutes() {
       <Route path="/analytics" element={<ProtectedRoute><AppLayout><AnalyticsPage /></AppLayout></ProtectedRoute>} />
       <Route path="/audit-logs" element={<ProtectedRoute><AppLayout><AuditLogsPage /></AppLayout></ProtectedRoute>} />
       <Route path="/correction-requests" element={<ProtectedRoute><AppLayout><CorrectionRequestsPage /></AppLayout></ProtectedRoute>} />
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 }

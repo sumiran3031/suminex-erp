@@ -4,22 +4,16 @@ import { getNavItemsForRole } from '../config/navigation';
 
 export default function Sidebar() {
   const { user } = useAuth();
-
   if (!user) return null;
 
   const navItems = getNavItemsForRole(user.role);
 
   return (
-    <aside
-      style={{
-        width: 220,
-        minHeight: '100vh',
-        backgroundColor: '#1e293b',
-        color: '#fff',
-        padding: '16px 0',
-      }}
-    >
-      <div style={{ padding: '0 16px 24px', fontSize: 18, fontWeight: 'bold' }}>
+    <aside style={{
+      width: 240, minHeight: '100vh', backgroundColor: 'var(--color-sidebar)',
+      color: '#fff', padding: '20px 0', flexShrink: 0,
+    }}>
+      <div style={{ padding: '0 20px 28px', fontSize: 20, fontWeight: 700 }}>
         SumiNex ERP
       </div>
       <nav>
@@ -29,10 +23,14 @@ export default function Sidebar() {
             to={item.path}
             style={({ isActive }) => ({
               display: 'block',
-              padding: '10px 16px',
+              padding: '10px 20px',
+              margin: '2px 8px',
+              borderRadius: 6,
               color: '#fff',
               textDecoration: 'none',
-              backgroundColor: isActive ? '#334155' : 'transparent',
+              fontSize: 14,
+              fontWeight: isActive ? 600 : 400,
+              backgroundColor: isActive ? 'var(--color-primary)' : 'transparent',
             })}
           >
             {item.label}

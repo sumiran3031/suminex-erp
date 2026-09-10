@@ -4,20 +4,14 @@ export default function Header() {
   const { user, logout } = useAuth();
 
   return (
-    <header
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '12px 24px',
-        borderBottom: '1px solid #e2e8f0',
-        backgroundColor: '#fff',
-      }}
-    >
-      <div />
+    <header style={{
+      display: 'flex', justifyContent: 'flex-end', alignItems: 'center',
+      padding: '14px 32px', borderBottom: '1px solid var(--color-border)',
+      backgroundColor: 'var(--color-surface)',
+    }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <span>
-          {user?.email} <span style={{ color: '#64748b' }}>({user?.role})</span>
+        <span style={{ fontSize: 14 }}>
+          {user?.email} <span className="text-muted">({user?.role})</span>
         </span>
         <button onClick={logout}>Log out</button>
       </div>
